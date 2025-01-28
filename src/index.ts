@@ -1,10 +1,11 @@
+import "reflect-metadata";
 import express, { Request, Response} from "express"; //import express
 import { router } from "./routes";
-
+import { AppDataSource } from "./database";
 
 //arquivo de configuração
-
 const server = express(); //iniciar o servidor
+
 server.use(express.json()); //configurar o servidor para aceitar JSON
 server.use(router); //configurar o servidor para usar as rotas
 

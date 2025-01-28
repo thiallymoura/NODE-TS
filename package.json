@@ -6,7 +6,11 @@
     "build": "rimraf ./build &&tsc",
     "start": "node build/index.js",
     "dev": "ts-node-dev src/index.ts",
-    "test": "jest"
+    "test": "jest",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:create": "npm run typeorm migration:create -n",
+    "migration:run": "npx typeorm-ts-node-commonjs migration:run -d src/database/index.ts",
+    "migration:revert": "nnpx typeorm-ts-node-commonjs migration:revert -d src/database/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +25,9 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "reflect-metadata": "^0.2.2",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.20"
   }
 }
