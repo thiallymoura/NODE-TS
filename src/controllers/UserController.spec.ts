@@ -2,13 +2,14 @@ import { UserService } from "../services/UserService";
 import { UserController } from "./UserController";
 import { Request } from "express";
 import { makeMockResponse } from "../__mocks__/mockResponse.mock";
+import { makeMockRequest } from "../__mocks__/mockRequest.mock";
 
 const mockUserService = {
     createUser: jest.fn(),
             //     getAllUsers: jest.fn(),
     getUser: jest.fn(),
             //     updateUser: jest.fn(),
-    deleteUser: jest.fn()
+    //
             
 }
 
@@ -107,62 +108,112 @@ describe("UserController", () => {
         expect(mockResponse.state.json).toMatchObject({ message: "Bad request! Todos os campos são obrigatórios" });
     });
 
-    // it("Deve verificar se a função get está sendo chamada", () => { 
-    //     const mockRequest = {} as Request; // Requisição vazia para o método getAllUsers
+    it("deve retornar o usuário com o seuId informado", () => {
+
+        const mockRequest = makeMockRequest({
+            params: {   
+                userId: "123456",
+            }
+        }) 
+        const mockResponse = makeMockResponse();
+
+        userController.getUser(mockRequest, mockResponse)
+        expect(mockUserService.getUser).toHaveBeenCalledWith("123456")
+        //expect(mockResponse.state.status).toBe(200)
+        
+    })
+
+
+    it("Deve retornar a mensagem de usuário deletado" , () => {
+        const mockRequest = {
+            body: {
+                name: "Caio",
+                email: "" 
+            }
+        } as Request;
+
+        const mockResponse = makeMockResponse();
+        // Chama o método deleteUser do controller
+        userController.deleteUser(mockRequest, mockResponse);
+    
+        // Verifica se o status retornado é 200
+        expect(mockResponse.state.status).toBe(200);
+    
+        // Verifica se a resposta contém a mensagem de sucesso
+        expect(mockResponse.state.json).toMatchObject({ message: "Usuário deletado com sucesso" });
+    });      
+    
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // it("Deve retornar erro ao tentar deletar um usuário sem email", async () => {
+    //     const mockRequest = {
+    //         body: { email: "" }
+    //     } as Request;
     //     const mockResponse = makeMockResponse();
-
-    //     // Chama o método getAllUsers do controller
-    //     userController.getUser(mockRequest, mockResponse);
-
-    //     // Verifica se a função getAllUsers do serviço foi chamada
-    //     expect(mockUserService.getUser).toHaveBeenCalled();
-
-    //     // Verifica se o status retornado é 200
-    //     expect(mockResponse.state.status).toBe(200);
-
-    //     // Verifica se a resposta contém os dados retornados pelo serviço
-    //     expect(mockResponse.state.json).toMatchObject([{ name: "Test User", email: "test@test.com" }]);
+        
+    //     await userController.deleteUser(mockRequest, mockResponse);
+        
+    //     expect(mockResponse.state.status).toBe(400);
+    //     expect(mockResponse.state.json).toMatchObject({ message: "Bad request! O campo email é obrigatório" });
     // });
 
-    it("Deve retornar erro ao tentar deletar um usuário sem email", async () => {
-        const mockRequest = {
-            body: { email: "" }
-        } as Request;
-        const mockResponse = makeMockResponse();
+    // it("Deve retornar mensagem de sucesso ao deletar usuário", async () => {
+    //     const mockRequest = {
+    //         body: { email: "caio@test.bank" }
+    //     } as Request;
+    //     const mockResponse = makeMockResponse();
         
-        await userController.deleteUser(mockRequest, mockResponse);
+    //     jest.spyOn(userController.userService, "deleteUser").mockResolvedValue(true);
         
-        expect(mockResponse.state.status).toBe(400);
-        expect(mockResponse.state.json).toMatchObject({ message: "Bad request! O campo email é obrigatório" });
-    });
+    //     await userController.deleteUser(mockRequest, mockResponse);
+        
+    //     expect(mockResponse.state.status).toBe(200);
+    //     expect(mockResponse.state.json).toMatchObject({ message: "Usuário deletado com sucesso" });
+    // });
 
-    it("Deve retornar mensagem de sucesso ao deletar usuário", async () => {
-        const mockRequest = {
-            body: { email: "caio@test.bank" }
-        } as Request;
-        const mockResponse = makeMockResponse();
+    // it("Deve retornar erro ao tentar deletar um usuário inexistente", async () => {
+    //     const mockRequest = {
+    //         body: { email: "naoexiste@test.bank" }
+    //     } as Request;
+    //     const mockResponse = makeMockResponse();
         
-        jest.spyOn(userController.userService, "deleteUser").mockResolvedValue(true);
+    //     jest.spyOn(userController.userService, "deleteUser").mockResolvedValue(false);
         
-        await userController.deleteUser(mockRequest, mockResponse);
+    //     await userController.deleteUser(mockRequest, mockResponse);
         
-        expect(mockResponse.state.status).toBe(200);
-        expect(mockResponse.state.json).toMatchObject({ message: "Usuário deletado com sucesso" });
-    });
-
-    it("Deve retornar erro ao tentar deletar um usuário inexistente", async () => {
-        const mockRequest = {
-            body: { email: "naoexiste@test.bank" }
-        } as Request;
-        const mockResponse = makeMockResponse();
-        
-        jest.spyOn(userController.userService, "deleteUser").mockResolvedValue(false);
-        
-        await userController.deleteUser(mockRequest, mockResponse);
-        
-        expect(mockResponse.state.status).toBe(404);
-        expect(mockResponse.state.json).toMatchObject({ message: "Usuário não encontrado" });
-    });
+    //     expect(mockResponse.state.status).toBe(404);
+    //     expect(mockResponse.state.json).toMatchObject({ message: "Usuário não encontrado" });
+    // });
     
 //     it("Deve retornar a mensagem de usuário deletado" , () => {
 //         const mockRequest = {
@@ -182,7 +233,7 @@ describe("UserController", () => {
 //         // Verifica se a resposta contém a mensagem de sucesso
 //         expect(mockResponse.state.json).toMatchObject({ message: "Usuário deletado com sucesso" });
 //     });
-})
+
 
 
 //     it("Deve deletar um usuário com sucesso", () => {

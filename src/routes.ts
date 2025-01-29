@@ -1,20 +1,27 @@
 // configurar as rotas da aplicação
 // controlar todas as rotas da api 
 
-import { Router, Request, Response } from "express";
+import { Router} from "express";
 import { UserController } from "./controllers/UserController";
+import { LoginController } from "./controllers/LoginController";
+import { verifyAuth } from "./midlleware/verifyAuth";
+
 
 //criar uma rota
 export const router = Router();
 
 const userController = new UserController(); //cria o usuário
+const loginController = new LoginController();
 
-// Função para lidar com rotas assíncronas e capturar erros automaticamente
-const asyncHandler = (fn: any) => (req: any, res: any, next: any) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-};
 
 //Rota do usuário
 router.post("/user", userController.createUser); //cria o usuário
-router.get("/user", userController.getUser); //pega todos os usuários
-router.delete("/user", asyncHandler(userController.deleteUser.bind(userController))); // Deleta usuário pelo email
+router.get("/user/:userId", verifyAuth, userController.getUser); //usuario verificado
+router.delete("/user", userController.deleteUser); // Deleta usuário pelo email
+
+//Rota de login
+router.post("/login", loginController.login); 
+
+
+
+

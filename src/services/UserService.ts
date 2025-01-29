@@ -1,7 +1,9 @@
 //manipular regras de negocio/ banco de dados 
+import { sign } from "jsonwebtoken";
 import { AppDataSource } from "../database";
 import { User } from "../entities/User";
 import { UserRepository } from "../repositories/UserRepository";
+
 
 // PROCESSO QUE DEFINE COMO O SISTEMA VAI FUNCIONAR PARA ATINGIR O OBJETIVO OU RESOLVER O PROBLEMA
 export class UserService {
@@ -20,29 +22,62 @@ export class UserService {
     }
 
     //retorna o usuario
-    getUser = () => {
+    getUser = async (userId: string): Promise<User | null> => {
+        return this.userRepository.getUser(userId);
         
     }
 
-//     // alterado aqui Remove um usuário com base no email
-//     deleteUser = async (email: string): Promise<boolean> => {
-//         const user = await this.userRepository.getUser(email);
-//         if (user) {
-//             await this.userRepository.deleteUser(email);
-//             return true;
-//         }
-//         return false;
-//     }
+    //retorna o usuário autenticado
+    getAuthenticatedUser = async (email: string, password: string): Promise<User | null> => {
+        return this.userRepository.getUserByEmailAndPassword(email, password);
+    }
 
+    //retorna o token
+    getToken = async(email: string, password: string): Promise<string | null> => {
+        const user = await this.getAuthenticatedUser(email, password);
+
+        if (!user) {
+            throw new Error("Usuário/senha incorretos"); 
+        }
+
+        const tokenData = {
+            name: user?.name,
+            email: user?.email
+        }
+
+        const tokenKey = "123456789"
+
+        const tokenOption = { //configuracoes do token
+            subject: user?.id_user
+        }
+
+        const token = sign(tokenData, tokenKey, tokenOption)
+
+        return token
+    }
+
+
+    // alterado aqui Remove um usuário com base no email
     deleteUser = async (email: string): Promise<boolean> => {
         const user = await this.userRepository.getUser(email);
-        if (!user) return false; 
-
-        await this.userRepository.deleteUser(email);
-        return true;
-    };
+        if (user) {
+            await this.userRepository.deleteUser(email);
+            return true;
+        }
+        return false;
+    }
 
 }
+
+
+
+// deleteUser = async (email: string): Promise<boolean> => {
+//     const user = await this.userRepository.getUser(email);
+//     if (!user) return false; 
+
+//     await this.userRepository.deleteUser(email);
+//     return true;
+// };
 
 
 

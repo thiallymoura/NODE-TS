@@ -21,26 +21,35 @@ export class UserRepository {
             }
         })
     }   
-    
-    // //alterado aqui para buscar pelo email
-    // deleteUser = async (email: string): Promise<boolean> => { //async -> manipulação de arquivos, sem bloquear a execução do código
-    //     const user = await this.manager.findOne(User, { //acessa o manager da classe, busca apenas um objeto do tipo User
-    //         where: { //busca os usários pelo email
-    //             email: email 
-    //         }
-    //     })
-    //     if (user) { //se o usário for encontrado
-    //         await this.manager.remove(user); //remove o usário
-    //         return true; //retorna true
-    //     }
-    //     return false; //retorna false
-    // }
-    async deleteUser(email: string): Promise<void> {
-        const user = await this.getUser(email); 
-        if (user) {
-            await this.manager.remove(user); // Remove a entidade encontrada
-        }
+
+    getUserByEmailAndPassword = async (email: string, password: string): Promise<User | null> => { //async -> manipulação de arquivos, sem bloquear a execução do código
+        return this.manager.findOne(User, { //acessa o manager da classe, busca apenas um objeto do tipo User
+            where: { //busca os usários pelo email e senha
+                email: email,
+                password: password
+            }
+        })
     }
+    
+    //alterado aqui para buscar pelo email
+    deleteUser = async (email: string): Promise<boolean> => { //async -> manipulação de arquivos, sem bloquear a execução do código
+        const user = await this.manager.findOne(User, { //acessa o manager da classe, busca apenas um objeto do tipo User
+            where: { //busca os usários pelo email
+                email: email 
+            }
+        })
+        if (user) { //se o usário for encontrado
+            await this.manager.remove(user); //remove o usário
+            return true; //retorna true
+        }
+        return false; //retorna false
+    }
+    // async deleteUser(email: string): Promise<void> {
+    //     const user = await this.getUser(email); 
+    //     if (user) {
+    //         await this.manager.remove(user); // Remove a entidade encontrada
+    //     }
+    // }
     
 
 }

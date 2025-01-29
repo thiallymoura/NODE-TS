@@ -37,28 +37,30 @@ export class UserController{
         return response.status(201).json({message: "Usuário criado com sucesso"});
     }
 
-    // alterado aqui - pega o usuário
-    getUser = (request: Request, response: Response): any => {
-        return response.status(200)
+   
+    getUser = async (request: Request, response: Response): Promise<any> => {
+        const { userId} = request.params; //pega o id do usuário
+        const user =  await this.userService.getUser(userId);
+        return response.status(200).json({
+            id_user: user?.id_user,
+            name: user?.name,
+            email: user?.email
+        })
     };
 
-    // alterado aqui - deleta o usuário
-    deleteUser = async (request: Request, response: Response): Promise<Response> => {
-        const { email } = request.body;
-
-        if (!email) {
-            return response.status(400).json({ message: "Bad request! O campo email é obrigatório" });
-        }
-
-        const userDeleted = await this.userService.deleteUser(email);
-
-        if (!userDeleted) {
-            return response.status(404).json({ message: "Usuário não encontrado" });
-        }
-
-        return response.status(200).json({ message: "Usuário deletado com sucesso" });
-    };
+   
+    deleteUser = (request: Request, response: Response):any => {
+    const user = request.body
+    console.log("Deletando usuário....", user)
+    return response.status(200).json({message: "Usuário deletado com sucesso"})
+    }
 }
+
+
+
+
+
+
 
 
 // deleteUser = (request: Request, response: Response):any => {

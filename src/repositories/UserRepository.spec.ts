@@ -16,8 +16,13 @@ describe("UserRepository", () => {
 
     //beforeAll -> executa antes de todos os testes
     beforeAll(async() => {//
-        managerMock = await getMockEntityManager({saveReturn: mockUser}); //cria o managerMock
+        managerMock = await getMockEntityManager({
+            saveReturn: mockUser,
+            findOneReturn: mockUser,
+            removeReturn: mockUser // Adicionando retorno para remove
+        }); //cria o managerMock
         userRepository = new UserRepository(managerMock as EntityManager);
+        
     })
 
     it("Deve cadastrar um novo usuário no banco de dados ",async () => {
@@ -26,4 +31,18 @@ describe("UserRepository", () => {
         expect(response).toMatchObject(mockUser)
     })
 
+    it("deve deletar um usuário do banco de dados", async () => {
+    const response = await userRepository.deleteUser(mockUser.email)
+    expect(managerMock.remove).toHaveBeenCalled()
+    expect(response).toBe(true) // Adicionando retorno para remove
+    })
+
 })
+
+
+
+// it("deve deletar um usuário do banco de dados", async () => {
+//     const response = await userRepository.deleteUser(mockUser.email)
+//     expect(managerMock.remove).toHaveBeenCalled()
+//     expect(response).toBe(true)
+// })
